@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  vectorizer:
+    build:
+      context: ./app
+    image: vectorizer
+    container_name: vectorizer
+    networks:
+      - caddy_net
+
+networks:
+  caddy_net:
+    external: true
