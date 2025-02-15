@@ -5,7 +5,7 @@ from vectorizer import generate_embedding
 
 kafka_config = {
     "bootstrap.servers": "kafka:9092",
-    "group.id": "test_group",
+    "group.id": "embedding_group",
     "auto.offset.reset": "earliest"
 }
 
