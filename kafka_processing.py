@@ -1,7 +1,7 @@
 import json
 from confluent_kafka import Producer, Consumer, KafkaException
 
-from vectorizer import generate_query_embedding
+from vectorizer import generate_embedding
 
 kafka_config = {
     "bootstrap.servers": "kafka:9092",
@@ -35,7 +35,7 @@ try:
         received_message = json.loads(msg.value().decode("utf-8"))
         print(f"Получено сообщение: {received_message}")
 
-        processed_embedding = generate_query_embedding(received_message["embedding"])
+        processed_embedding = generate_embedding(received_message["embedding"])
         print(f"Обработанный embedding: {processed_embedding}")
 
         producer.produce(
