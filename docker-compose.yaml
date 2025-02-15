@@ -2,7 +2,7 @@ version: '3.8'
 services:
   vectorizer:
     build:
-      context: ./app
+      context: .
     image: vectorizer
     container_name: vectorizer
     networks:
