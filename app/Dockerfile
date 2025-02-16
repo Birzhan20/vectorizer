@@ -1,4 +1,4 @@
-FROM python:3.11.9
+FROM python:3.11-slim
 
 WORKDIR /code
 COPY .. /code
@@ -7,4 +7,4 @@ COPY .. /code
 
 RUN pip install -r requirements.txt
 
-CMD ["python", "kafka_processing.py"]
+CMD ["python3", "kafka_processing.py"]
