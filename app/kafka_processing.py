@@ -1,7 +1,10 @@
 import json
+import logging
 from confluent_kafka import Producer, Consumer, KafkaException
 
 from vectorizer import generate_embedding
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 kafka_config = {
     "bootstrap.servers": "kafka:9092",
@@ -15,9 +18,9 @@ producer = Producer({"bootstrap.servers": kafka_config["bootstrap.servers"]})
 def delivery_report(err, msg):
     """Функция обратного вызова для подтверждения отправки сообщения"""
     if err:
-        print(f"Ошибка доставки: {err}")
+        logging.info(f"Ошибка доставки: {err}")
     else:
-        print(f"Сообщение отправлено: {msg.topic()} [{msg.partition()}]")
+        logging.info(f"Сообщение отправлено: {msg.topic()} [{msg.partition()}]")
 
 
 consumer = Consumer(kafka_config)
@@ -25,6 +28,7 @@ consumer.subscribe(["vector"])
 
 try:
     while True:
+        logging.info(f"Consumer started")
         msg = consumer.poll(timeout=0.5)
         if msg is None:
             continue
@@ -33,10 +37,10 @@ try:
 
         # Декодируем JSON-сообщение
         received_message = json.loads(msg.value().decode("utf-8"))
-        print(f"Получено сообщение: {received_message}")
+        logging.info(f"Получено сообщение: {received_message}")
 
         processed_embedding = generate_embedding(received_message["embedding"])
-        print(f"Обработанный embedding: {processed_embedding}")
+        logging.info(f"Обработанный embedding: {processed_embedding}")
 
         producer.produce(
             "vector_res",
@@ -45,8 +49,9 @@ try:
             callback=delivery_report
         )
         producer.flush()
+        logging.info("Сообщение отправлено обратно")
 
 except KeyboardInterrupt:
-    print("Остановка консюмера")
+    logging.info("Остановка консюмера")
 finally:
     consumer.close()
