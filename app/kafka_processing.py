@@ -1,10 +1,25 @@
 import json
 import logging
-from confluent_kafka import Producer, Consumer, KafkaException
+import os
 
-from vectorizer import generate_embedding
+from confluent_kafka import Producer, Consumer, KafkaException
+from sentence_transformers import SentenceTransformer
+
+local_model_path = "../model"
+
+if not os.path.exists(local_model_path):
+    print("Скачивание модели...")
+    model = SentenceTransformer('jina-embeddings-v3')
+    model.save(local_model_path)
+    print("Модель сохранена")
+
+# Загружаем модель
+vectorizer = SentenceTransformer(local_model_path)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
+def generate_embedding(query):
+    return vectorizer.encode(query).tolist()
 
 kafka_config = {
     "bootstrap.servers": "kafka:9092",
