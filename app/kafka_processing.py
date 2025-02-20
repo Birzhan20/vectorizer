@@ -40,32 +40,29 @@ def delivery_report(err, msg):
 
 consumer = Consumer(kafka_config)
 consumer.subscribe(["vector"])
-logging.info(f"Consumer started")
-try:
-    while True:
-        msg = consumer.poll(timeout=0.5)
-        if msg is None:
-            continue
-        if msg.error():
-            raise KafkaException(msg.error())
 
-        # Декодируем JSON-сообщение
-        received_message = json.loads(msg.value().decode("utf-8"))
-        logging.info(f"Получено сообщение: {received_message}")
+logging.info("Подписано на топик 'vector'")
 
-        processed_embedding = generate_embedding(received_message["embedding"])
-        logging.info(f"Обработанный embedding: {processed_embedding}")
+while True:
+    msg = consumer.poll(timeout=0.5)
+    if msg is None:
+        continue
+    if msg.error():
+        raise KafkaException(msg.error())
 
-        producer.produce(
-            "vector_res",
-            key=msg.key(),
-            value=json.dumps(received_message).encode("utf-8"),
-            callback=delivery_report
-        )
-        producer.flush()
-        logging.info("Сообщение отправлено обратно")
+    # Декодируем JSON-сообщение
+    received_message = json.loads(msg.value().decode("utf-8"))
+    logging.info(f"Получено сообщение: {received_message}")
 
-except KeyboardInterrupt:
-    logging.info("Остановка консюмера")
-finally:
-    consumer.close()
+    processed_embedding = generate_embedding(received_message["embedding"])
+    logging.info(f"Обработанный embedding: {processed_embedding}")
+
+    producer.produce(
+        "vector_res",
+        key=msg.key(),
+        value=json.dumps(received_message).encode("utf-8"),
+        callback=delivery_report
+    )
+    producer.flush()
+    logging.info("Сообщение отправлено обратно")
+
