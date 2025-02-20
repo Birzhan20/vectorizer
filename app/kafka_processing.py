@@ -9,7 +9,7 @@ local_model_path = "../model"
 
 if not os.path.exists(local_model_path):
     print("Скачивание модели...")
-    model = SentenceTransformer('jina-embeddings-v3')
+    model = SentenceTransformer('jinaai/jina-embeddings-v3')
     model.save(local_model_path)
     print("Модель сохранена")
 
