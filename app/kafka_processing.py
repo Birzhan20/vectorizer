@@ -40,9 +40,8 @@ def delivery_report(err, msg):
 
 consumer = Consumer(kafka_config)
 consumer.subscribe(["vector"])
-
+logging.info(f"Consumer started")
 try:
-    logging.info(f"Consumer started")
     while True:
         msg = consumer.poll(timeout=0.5)
         if msg is None:
