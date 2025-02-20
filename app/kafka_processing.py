@@ -42,8 +42,8 @@ consumer = Consumer(kafka_config)
 consumer.subscribe(["vector"])
 
 try:
+    logging.info(f"Consumer started")
     while True:
-        logging.info(f"Consumer started")
         msg = consumer.poll(timeout=0.5)
         if msg is None:
             continue
